@@ -1,19 +1,215 @@
 <!doctype html>
 <html>
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <title>paliEditor</title>
-    <script>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>paliEditor</title>
+<script language="javascript">
+/**
+ * http://www.openjs.com/scripts/events/keyboard_shortcuts/
+ * Version : 2.01.B
+ * By Binny V A
+ * License : BSD
+ */
+shortcut = {
+	'all_shortcuts':{},//All the shortcuts are stored in this array
+	'add': function(shortcut_combination,callback,opt) {
+		//Provide a set of default options
+		var default_options = {
+			'type':'keydown',
+			'propagate':false,
+			'disable_in_input':false,
+			'target':document,
+			'keycode':false
+		}
+		if(!opt) opt = default_options;
+		else {
+			for(var dfo in default_options) {
+				if(typeof opt[dfo] == 'undefined') opt[dfo] = default_options[dfo];
+			}
+		}
+		var ele = opt.target;
+		if(typeof opt.target == 'string') ele = document.getElementById(opt.target);
+		var ths = this;
+		shortcut_combination = shortcut_combination.toLowerCase();
+		//The function to be called at keypress
+		var func = function(e) {
+			e = e || window.event;
+			if(opt['disable_in_input']) { //Don't enable shortcut keys in Input, Textarea fields
+				var element;
+				if(e.target) element=e.target;
+				else if(e.srcElement) element=e.srcElement;
+				if(element.nodeType==3) element=element.parentNode;
+				if(element.tagName == 'INPUT' || element.tagName == 'TEXTAREA') return;
+			}
+			//Find Which key is pressed
+			if (e.keyCode) code = e.keyCode;
+			else if (e.which) code = e.which;
+			var character = String.fromCharCode(code).toLowerCase();
+			if(code == 188) character=","; //If the user presses , when the type is onkeydown
+			if(code == 190) character="."; //If the user presses , when the type is onkeydown
+			var keys = shortcut_combination.split("+");
+			//Key Pressed - counts the number of valid keypresses - if it is same as the number of keys, the shortcut function is invoked
+			var kp = 0;
+			//Work around for stupid Shift key bug created by using lowercase - as a result the shift+num combination was broken
+			var shift_nums = {
+				"`":"~",
+				"1":"!",
+				"2":"@",
+				"3":"#",
+				"4":"$",
+				"5":"%",
+				"6":"^",
+				"7":"&",
+				"8":"*",
+				"9":"(",
+				"0":")",
+				"-":"_",
+				"=":"+",
+				";":":",
+				"'":"\"",
+				",":"<",
+				".":">",
+				"/":"?",
+				"\\":"|"
+			}
+			//Special Keys - and their codes
+			var special_keys = {
+				'esc':27,
+				'escape':27,
+				'tab':9,
+				'space':32,
+				'return':13,
+				'enter':13,
+				'backspace':8,
+				'scrolllock':145,
+				'scroll_lock':145,
+				'scroll':145,
+				'capslock':20,
+				'caps_lock':20,
+				'caps':20,
+				'numlock':144,
+				'num_lock':144,
+				'num':144,
+				'pause':19,
+				'break':19,
+				'insert':45,
+				'home':36,
+				'delete':46,
+				'end':35,
+				'pageup':33,
+				'page_up':33,
+				'pu':33,
+				'pagedown':34,
+				'page_down':34,
+				'pd':34,
+				'left':37,
+				'up':38,
+				'right':39,
+				'down':40,
+				'f1':112,
+				'f2':113,
+				'f3':114,
+				'f4':115,
+				'f5':116,
+				'f6':117,
+				'f7':118,
+				'f8':119,
+				'f9':120,
+				'f10':121,
+				'f11':122,
+				'f12':123
+			}
+			var modifiers = { 
+				shift: { wanted:false, pressed:false},
+				ctrl : { wanted:false, pressed:false},
+				alt  : { wanted:false, pressed:false},
+				meta : { wanted:false, pressed:false}	//Meta is Mac specific
+			};
+			if(e.ctrlKey)	modifiers.ctrl.pressed = true;
+			if(e.shiftKey)	modifiers.shift.pressed = true;
+			if(e.altKey)	modifiers.alt.pressed = true;
+			if(e.metaKey)   modifiers.meta.pressed = true;
+			for(var i=0; k=keys[i],i<keys.length; i++) {
+				//Modifiers
+				if(k == 'ctrl' || k == 'control') {
+					kp++;
+					modifiers.ctrl.wanted = true;
+				} else if(k == 'shift') {
+					kp++;
+					modifiers.shift.wanted = true;
+				} else if(k == 'alt') {
+					kp++;
+					modifiers.alt.wanted = true;
+				} else if(k == 'meta') {
+					kp++;
+					modifiers.meta.wanted = true;
+				} else if(k.length > 1) { //If it is a special key
+					if(special_keys[k] == code) kp++;
+				} else if(opt['keycode']) {
+					if(opt['keycode'] == code) kp++;
+				} else { //The special keys did not match
+					if(character == k) kp++;
+					else {
+						if(shift_nums[character] && e.shiftKey) { //Stupid Shift key bug created by using lowercase
+							character = shift_nums[character]; 
+							if(character == k) kp++;
+						}
+					}
+				}
+			}
+			if(kp == keys.length && 
+						modifiers.ctrl.pressed == modifiers.ctrl.wanted &&
+						modifiers.shift.pressed == modifiers.shift.wanted &&
+						modifiers.alt.pressed == modifiers.alt.wanted &&
+						modifiers.meta.pressed == modifiers.meta.wanted) {
+				callback(e);
+				if(!opt['propagate']) { //Stop the event
+					//e.cancelBubble is supported by IE - this will kill the bubbling process.
+					e.cancelBubble = true;
+					e.returnValue = false;
+					//e.stopPropagation works in Firefox.
+					if (e.stopPropagation) {
+						e.stopPropagation();
+						e.preventDefault();
+					}
+					return false;
+				}
+			}
+		}
+		this.all_shortcuts[shortcut_combination] = {
+			'callback':func, 
+			'target':ele, 
+			'event': opt['type']
+		};
+		//Attach the function with the event
+		if(ele.addEventListener) ele.addEventListener(opt['type'], func, false);
+		else if(ele.attachEvent) ele.attachEvent('on'+opt['type'], func);
+		else ele['on'+opt['type']] = func;
+	},
+	//Remove the shortcut - just specify the shortcut and I will remove the binding
+	'remove':function(shortcut_combination) {
+		shortcut_combination = shortcut_combination.toLowerCase();
+		var binding = this.all_shortcuts[shortcut_combination];
+		delete(this.all_shortcuts[shortcut_combination])
+		if(!binding) return;
+		var type = binding['event'];
+		var ele = binding['target'];
+		var callback = binding['callback'];
+		if(ele.detachEvent) ele.detachEvent('on'+type, callback);
+		else if(ele.removeEventListener) ele.removeEventListener(type, callback, false);
+		else ele['on'+type] = false;
+	}
+}
+    </script>
+<script language="javascript">
     // -------------------------------------------------------------------
     // Switch Content Script- By Dynamic Drive, available at: http://www.dynamicdrive.com
     // Created: Jan 5th, 2007
     // April 5th, 07: Added ability to persist content states by x days versus just session only
     // March 27th, 08': Added ability for certain headers to get its contents remotely from an external file via Ajax (2 variables below to customize)
     // -------------------------------------------------------------------
-
     var switchcontent_ajax_msg='<em>Loading Ajax content...</em>' //Customize message to show while fetching Ajax content (if applicable)
     var switchcontent_ajax_bustcache=true //Bust cache and refresh fetched Ajax contents when page is reloaded/ viewed again?
-
     function switchcontent(className, filtertag){
 	    this.className=className
 	    this.collapsePrev=false //Default: Collapse previous content each time
@@ -22,17 +218,14 @@
 	    this.filter_content_tag=(typeof filtertag!="undefined")? filtertag.toLowerCase() : ""
 	    this.ajaxheaders={} //object to hold path to ajax content for corresponding header (ie: ajaxheaders["header1"]='external.htm')
     }
-
     switchcontent.prototype.setStatus=function(openHTML, closeHTML){ //PUBLIC: Set open/ closing HTML indicator. Optional
 	    this.statusOpen=openHTML
 	    this.statusClosed=closeHTML
     }
-
     switchcontent.prototype.setColor=function(openColor, closeColor){ //PUBLIC: Set open/ closing color of switch header. Optional
 	    this.colorOpen=openColor
 	    this.colorClosed=closeColor
     }
-
     switchcontent.prototype.setPersist=function(bool, days){ //PUBLIC: Enable/ disable persistence. Default is false.
 	    if (bool==true){ //if enable persistence
 		    if (typeof days=="undefined") //if session only
@@ -45,15 +238,12 @@
 	    else
 		    this.persistType="none"
     }
-
     switchcontent.prototype.collapsePrevious=function(bool){ //PUBLIC: Enable/ disable collapse previous content. Default is false.
 	    this.collapsePrev=bool
     }
-
     switchcontent.prototype.setContent=function(index, filepath){ //PUBLIC: Set path to ajax content for corresponding header based on header index
 	    this.ajaxheaders["header"+index]=filepath
     }
-
     switchcontent.prototype.sweepToggle=function(setting){ //PUBLIC: Expand/ contract all contents method. (Values: "contract"|"expand")
 	    if (typeof this.headers!="undefined" && this.headers.length>0){ //if there are switch contents defined on the page
 		    for (var i=0; i<this.headers.length; i++){
@@ -64,8 +254,6 @@
 		    }
 	    }
     }
-
-
     switchcontent.prototype.defaultExpanded=function(){ //PUBLIC: Set contents that should be expanded by default when the page loads (ie: defaultExpanded(0,2,3)). Persistence if enabled overrides this setting.
 	    var expandedindices=[] //Array to hold indices (position) of content to be expanded by default
 	    //Loop through function arguments, and store each one within array
@@ -74,36 +262,24 @@
 		    expandedindices[expandedindices.length]=arguments[i]
 	    this.expandedindices=expandedindices.join(",") //convert array into a string of the format: "0,2,3" for later parsing by script
     }
-
-
     //PRIVATE: Sets color of switch header.
-
     switchcontent.prototype.togglecolor=function(header, status){
 	    if (typeof this.colorOpen!="undefined")
 		    header.style.color=status
     }
-
-
     //PRIVATE: Sets status indicator HTML of switch header.
-
     switchcontent.prototype.togglestatus=function(header, status){
 	    if (typeof this.statusOpen!="undefined")
 		    header.firstChild.innerHTML=status
     }
-
-
     //PRIVATE: Contracts a content based on its corresponding header entered
-
     switchcontent.prototype.contractcontent=function(header){
 	    var innercontent=document.getElementById(header.id.replace("-title", "")) //Reference content container for this header
 	    innercontent.style.display="none"
 	    this.togglestatus(header, this.statusClosed)
 	    this.togglecolor(header, this.colorClosed)
     }
-
-
     //PRIVATE: Expands a content based on its corresponding header entered
-
     switchcontent.prototype.expandcontent=function(header){
 	    var innercontent=document.getElementById(header.id.replace("-title", ""))
 	    if (header.ajaxstatus=="waiting"){//if this is an Ajax header AND remote content hasn't already been fetched
@@ -113,12 +289,10 @@
 	    this.togglestatus(header, this.statusOpen)
 	    this.togglecolor(header, this.colorOpen)
     }
-
     // -------------------------------------------------------------------
     // PRIVATE: toggledisplay(header)- Toggles between a content being expanded or contracted
     // If "Collapse Previous" is enabled, contracts previous open content before expanding current
     // -------------------------------------------------------------------
-
     switchcontent.prototype.toggledisplay=function(header){
 	    var innercontent=document.getElementById(header.id.replace("-title", "")) //Reference content container for this header
 	    if (innercontent.style.display=="block")
@@ -131,13 +305,10 @@
 	    if (this.collapsePrev)
 		    this.prevHeader=header //Set current expanded content as the next "Previous Content"
     }
-
-
     // -------------------------------------------------------------------
     // PRIVATE: collectElementbyClass()- Searches and stores all switch contents (based on shared class name) and their headers in two arrays
     // Each content should carry an unique ID, and for its header, an ID equal to "CONTENTID-TITLE"
     // -------------------------------------------------------------------
-
     switchcontent.prototype.collectElementbyClass=function(classname){ //Returns an array containing DIVs with specified classname
 	    var classnameRE=new RegExp("(^|\\s+)"+classname+"($|\\s+)", "i") //regular expression to screen for classname within element
 	    this.headers=[], this.innercontents=[]
@@ -154,10 +325,7 @@
 		    }
 	    }
     }
-
-
     //PRIVATE: init()- Initializes Switch Content function (collapse contents by default unless exception is found)
-
     switchcontent.prototype.init=function(){
 	    var instanceOf=this
 	    this.collectElementbyClass(this.className) //Get all headers and its corresponding content based on shared class name of contents
@@ -190,13 +358,10 @@
 	    } //END FOR LOOP
 	    switchcontent.dotask(window, function(){instanceOf.rememberpluscleanup()}, "unload") //Call persistence method onunload
     }
-
-
     // -------------------------------------------------------------------
     // PRIVATE: rememberpluscleanup()- Stores the indices of content that are expanded inside session only cookie
     // If "Collapse Previous" is enabled, only 1st expanded content index is stored
     // -------------------------------------------------------------------
-
     //Function to store index of opened ULs relative to other ULs in Tree into cookie:
     switchcontent.prototype.rememberpluscleanup=function(){
 	    //Define array to hold ids of open content that should be persisted
@@ -219,13 +384,9 @@
 		    switchcontent.setCookie(this.className+"_dtrack", this.persistDays, this.persistDays) //also remember number of days to persist (int)
 	    }
     }
-
-
     // -------------------------------------------------------------------
     // A few utility functions below:
     // -------------------------------------------------------------------
-
-
     switchcontent.dotask=function(target, functionref, tasktype){ //assign a function to execute to an event handler (ie: onunload)
 	    var tasktype=(window.addEventListener)? tasktype : "on"+tasktype
 	    if (target.addEventListener)
@@ -233,7 +394,6 @@
 	    else if (target.attachEvent)
 		    target.attachEvent(tasktype, functionref)
     }
-
     switchcontent.connect=function(pageurl, header){
 	    var page_request = false
 	    var bustcacheparameter=""
@@ -258,7 +418,6 @@
 	    page_request.open('GET', pageurl+bustcacheparameter, true)
 	    page_request.send(null)
     }
-
     switchcontent.loadpage=function(page_request, header){
 	    var innercontent=document.getElementById(header.id.replace("-title", "")) //Reference content container for this header
 	    innercontent.innerHTML=switchcontent_ajax_msg //Display "fetching page message"
@@ -267,14 +426,12 @@
 		    header.ajaxstatus="loaded"
 	    }
     }
-
     switchcontent.getCookie=function(Name){ 
 	    var re=new RegExp(Name+"=[^;]+", "i"); //construct RE to search for target name/value pair
 	    if (document.cookie.match(re)) //if cookie found
 		    return document.cookie.match(re)[0].split("=")[1] //return its value
 	    return ""
     }
-
     switchcontent.setCookie=function(name, value, days){
 	    if (typeof days!="undefined"){ //if set persistent cookie
 		    var expireDate = new Date()
@@ -285,8 +442,7 @@
 		    document.cookie = name+"="+value
     }
     </script>
-    
-    <script>
+<script language="javascript">
     setInterval(function(){textareaSave();},5000);
     // calling the function
     // insertAtCursor(document.formName.fieldName, 'this value');
@@ -310,152 +466,185 @@
 		    myField.value += myValue;
 	    }
     }
-
-function storageCheck () {
-    if(typeof(Storage)!=="undefined")
-      {
-	return true;
-      }
-    else
-      {
-	alert("       Your browser doesn't support this function. \n       Please copy your document to another place before close this page.");
-	return false;
-      }
-}
-
-function textareaSave() {
-    if (!storageCheck ()) return ;
-    localStorage.paliEditorSave=document.getElementById('textarea').value;
-}
-
-function textareaLoad() {
-    //if (!storageCheck ()) return ;
-    document.getElementById('textarea').value=localStorage.paliEditorSave;
-}
+    function getCursorPosition(el) { 
+      if (el.selectionStart) { 
+        return el.selectionStart; 
+      } else if (document.selection) { 
+        el.focus(); 
+        var r = document.selection.createRange(); 
+        if (r == null) { 
+          return 0; 
+        } 
+        var re = el.createTextRange(), 
+            rc = re.duplicate(); 
+        re.moveToBookmark(r.getBookmark()); 
+        rc.setEndPoint('EndToStart', re); 
+        return rc.text.length; 
+      }  
+      return 0; 
+    }
+    function setCursorPosition(el, pos)
+    {
+	obj=el;
+	//FOR IE
+	if(obj.setSelectionRange)
+	{
+	    obj.focus();
+	    obj.setSelectionRange(pos,pos);
+	}
+	// For Firefox
+	else if (obj.createTextRange)
+	{
+	    var range = obj.createTextRange();
+	    range.collapse(true);
+	    range.moveEnd('character', pos);
+	    range.moveStart('character', pos);
+	    range.select();
+	}
+    }
+    function storageCheck () {
+	if(typeof(Storage)!=="undefined")
+	  {
+	    return true;
+	  }
+	else
+	  {
+	    alert("       Your browser doesn't support this function. \n       Please copy your document to another place before close this page.");
+	    return false;
+	  }
+    }
+    function textareaSave() {
+	if (!storageCheck ()) return ;
+	try {
+	    localStorage.paliEditorSave=document.getElementById('textarea').value;
+	} catch(e) {}
+    }
+    function textareaLoad() {
+	try {
+	document.getElementById('textarea').value=localStorage.paliEditorSave;
+	} catch (e){}
+    }
     </script>
-    
-    <style type="text/css">
+<style type="text/css">
     /*Style sheet used for demo. Remove if desired*/
     .handcursor{
     cursor:hand;
     cursor:pointer;
     }
-    </style>
-    <style>
-      body {
-        font-family: sans-serif;
-      }
-      label {
-        display: block;
-      }
-      textarea {
-        font-family: monospace;
-      }
-    </style>
-  </head>
-  <body onload="textareaLoad();document.getElementById('textarea').focus();">
-    <b><center>Namo Tassa Bhagavato Arahato Sammasambuddhassa</center></b>
-    <h3 id="joecontent1-title" class="handcursor">Toolbar
-    <input type="button" id="typingModeB" value="NOML." style="display:none;" title="Click to switch between Normal/Special Character Mode."
-	onclick="toggleButton(this,'NOML.', 'SPCL.');document.getElementById('textarea').focus();" />
-    </h3>
-    <p id="joecontent1" class="switchgroup2">
-    <input type="button" value="Load" onclick="textareaLoad();" /><input type="button" value="Save" onclick="textareaSave();" /><br />
-	<script>
-	typingMode=document.getElementById("typingModeB");
-	spclUpChar="ĀĪŪṄÑṬḌṆḶṀ".split("");
-	spclLoChar="āīūṅñṭḍṇḷṁ".split("");	
-	spclChar=spclUpChar.concat(spclLoChar);
-	//var spclCode=[65, 73, 85, 75, 67, 84, 68, 78, 76, 77];//on key up and upper of onkeypress
-	spclCode=[65, 73, 85, 75, 67, 84, 68, 78, 76, 77,
+    body {
+	font-family: sans-serif;
+    }
+    label {
+	display: block;
+    }
+    textarea {
+	font-family: monospace;
+    }
+</style>
+</head>
+<body onload="textareaLoad();document.getElementById('textarea').focus();">
+<b><center>Namo Tassa Bhagavato Arahato Sammāsambuddhassa</center></b>
+<h3 id="joecontent1-title" class="handcursor">Toolbar</h3>
+<p id="joecontent1" class="switchgroup2">
+	<input type="button" value="Save" onclick="textareaSave();" /><input type="button" value="Load" onclick="textareaLoad();" /><input type="button" value="Seperator" onclick="textarea.value='\n\n--------------------------------------------\n\n' +textarea.value; setCursorPosition(textarea, 0); textarea.focus(); " /><br />
+	<br />
+	<span id="charToolbar"></span>
+</p>
+<h3 id="joecontent2-title" class="handcursor">paliEditor</h3>
+<p id="joecontent2" class="switchgroup2">
+	<textarea name="textarea" id="textarea" cols='80' rows='17' placeholder="Type your pali here..."></textarea>
+</p>
+<script language="javascript">
+    var shortcutKey="Alt";
+    var textarea=document.getElementById('textarea');	
+    var spclUpChar="ĀĪŪṄÑṬḌṆḶṀ".split("");
+    var spclLoChar="āīūṅñṭḍṇḷṁ".split("");	
+    var nomlUpChar="AIUKCTDNLM".split("");
+    var nomlLoChar=nomlUpChar.join("").toLowerCase().split("");
+    var spclChar=spclUpChar.concat(spclLoChar);
+    var nomlChar=nomlUpChar.concat(nomlLoChar);
+    //var spclCode=[65, 73, 85, 75, 67, 84, 68, 78, 76, 77];//on key up and upper of onkeypress
+    var spclCode=[65, 73, 85, 75, 67, 84, 68, 78, 76, 77,
 	97, 105, 117, 107, 99, 116, 100, 110, 108, 109];
-	for (i in spclUpChar) {
-	    document.write('<input type="button" value="'+spclUpChar[i]+'" onclick="var textarea=document.getElementById(\'textarea\');insertAtCursor(textarea, \''+spclUpChar[i]+'\');textarea.focus();" />');
-	    document.write('<input type="button" value="'+spclLoChar[i]+'" onclick="var textarea=document.getElementById(\'textarea\');insertAtCursor(textarea, \''+spclLoChar[i]+'\');textarea.focus();" />');
-	}
-	function textareaEvnHdl (event){
-	    var typingMode=document.getElementById("typingModeB");
-	    var keyCode = ('which' in event) ? event.which : event.keyCode;
-	    var ctrl=event.ctrlKey;
-	    var shft=event.shiftKey;
-	    var textarea=document.getElementById('textarea');
-	    if (ctrl ){
-		if (keyCode==17) {
-		    toggleButton(typingMode, 'NOML.', 'SPCL.');
-		    typingMode.style.display="";
-		    textarea.focus();
-		    return ;
-		}
-		else if (keyCode==49) {
-		    textareaSave();
-		    textarea.focus();
-		}
-	    }
-	    if(typingMode.value!='SPCL.') return ;
-	    for(i in spclCode){
-		if (spclCode[i]==keyCode) { 
-		    insertAtCursor(textarea, spclChar[i]);
-		    textarea.focus();
-		    return false;
-		}
-	    }
-	}
-	function toggleButton(obj,v1,v2){
-	    if(obj.value==v1) {
-		obj.value=v2;
-	    } 
-	    else 
-		obj.value=v1;
-	} 
-	</script>
-    </p>
-    <h3 id="joecontent2-title" class="handcursor">paliEditor</h3>
-    <p id="joecontent2" class="switchgroup2">	
-	<textarea name="textarea" id="textarea" cols=80 rows=17 placeholder="Type your pali here..." onkeypress="return textareaEvnHdl(event);" ></textarea>
-    </p>
-    <h3 id="joecontent4-title" class="handcursor">Reference Tool</h3>
-    <p id="joecontent4" class="switchgroup2">
-	<b>Just Tipitaka, Atthakathā, Ṭīkā, and Pali Dictionary Google Search</b>
+    charToolbar="";
+    for (i in spclUpChar) {
+	charToolbar+='<input type="button" value="'+spclUpChar[i]+'" title="'+shortcutKey+'+Shift+'+nomlUpChar[i]+'" onclick="insertAtCursor(document.activeElement, \''+spclUpChar[i]+'\');" />';
+	charToolbar+='<input type="button" value="'+spclLoChar[i]+'" title="'+shortcutKey+'+'+nomlLoChar[i]+'" onclick="insertAtCursor(document.activeElement, \''+spclLoChar[i]+'\');" />&nbsp;&nbsp;';
+    }    
+    document.getElementById("charToolbar").innerHTML=charToolbar;
+    shortcut.remove("Ctrl+S");
+    shortcut.add("Ctrl+S",function() {
+	    textareaSave();
+    });
+    for (i in nomlUpChar) {    
+	shortcut.remove(shortcutKey+"+"+nomlUpChar[i]);
+	shortcut.remove(shortcutKey+"+Shift"+nomlLoChar[i]);
+	eval("shortcut.add(\""+shortcutKey+"+Shift+"+nomlUpChar[i]+"\",function() {var lastPos=getCursorPosition(document.activeElement); insertAtCursor(document.activeElement, \""+spclUpChar[i]+"\"); setCursorPosition(document.activeElement, lastPos+1);});");
+	eval("shortcut.add(\""+shortcutKey+"+"+nomlLoChar[i]+"\",function() {var lastPos=getCursorPosition(document.activeElement); insertAtCursor(document.activeElement, \""+spclLoChar[i]+"\"); setCursorPosition(document.activeElement, lastPos+1);});");
+    }
+    /*
+    //Fail because just one of last "i" variable value can pass into function() { }.
+    //And I can't use (function () {})(); because callback requir a function but ()(); isn't function.
+    for (i in nomlUpChar) {
+	shortcut.add("Ctrl+Shift+"+nomlUpChar[i],function() {alert(i);callBack(textarea,spclUpChar[i])});
+    }
+    for (i in nomlLoChar) {
+	shortcut.add("Ctrl+"+nomlUpChar[i],function() {alert(i);callBack(textarea,spclLoChar[i])});
+    }
+    function callBack(textarea,i) {
+	insertAtCursor(textarea, i);
+	textarea.focus();
+    }*/
+    </script>
+<h3 id="joecontent4-title" class="handcursor">Reference Tool</h3>
+<p id="joecontent4" class="switchgroup2">
+	<b>Just Tipitaka, Atthakathā, Ṭīkā, and Pāli Dictionary Google Search (alpha)</b>
 	<!-- Put the following javascript before the closing </head> tag. -->
-<script>
-  (function() {
-    var cx = '004195954361687891040:vlgpwlxsk8m';
-    var gcse = document.createElement('script'); gcse.type = 'text/javascript'; gcse.async = true;
-    gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
-        '//www.google.com/cse/cse.js?cx=' + cx;
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(gcse, s);
-  })();
-</script>
-
-<!-- Place this tag where you want both of the search box and the search results to render -->
-<gcse:search></gcse:search><br />
-      <b>Another</b><br />
-	<a href="http://www.tipitaka.org/romn/" target="_blank">All of tipitaka, atthakathā, and ṭīkā pali.</a><br />
-	<a href="http://www.accesstoinsight.org/" target="_blank">English translated tipitaka.</a><br />
-	<a href="http://dsal.uchicago.edu/dictionaries/pali/" target="_blank">Pali-English dictionary.</a><br />
-	<a href="http://www.84000.org/tipitaka/dic/" target="_blank">Thai and English.</a><br />
-	<a href="http://translate.googleusercontent.com/translate_c?depth=1&hl=th&rurl=translate.google.co.th&sl=th&tl=en&twu=1&u=http://www.84000.org/tipitaka/pitaka_item/&usg=ALkJrhh6a4xiTIAjSmLSmRA3go5et4GiWw" target="_blank">Translate back to english of thai translated tipitaka and atthakathā.</a><br />
-    </p>
-    <h3 id="joecontent3-title" class="handcursor">How to and Tips</h3>
-    <p id="joecontent3" class="switchgroup2">
+	<script language="javascript">
+	      (function() {
+		var cx = '004195954361687891040:vlgpwlxsk8m';
+		var gcse = document.createElement('script'); gcse.type = 'text/javascript'; gcse.async = true;
+		gcse.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') +
+		    '//www.google.com/cse/cse.js?cx=' + cx;
+		var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(gcse, s);
+	      })();
+	    </script>
+	<!-- Place this tag where you want both of the search box and the search results to render -->
+	<gcse:search></gcse:search><br />
+	<b>Another</b><br />
+	<a href="http://www.tipitaka.org/romn/" target="_blank">All of Tipitaka, Atthakathā, and Ṭīkā Pāli.</a><br />
+	<a href="http://www.accesstoinsight.org/" target="_blank">English Translated Tipitaka.</a><br />
+	<a href="http://dsal.uchicago.edu/dictionaries/pali/" target="_blank">Pali-English Dictionary.</a><br />
+	<a href="http://www.84000.org/tipitaka/dic/" target="_blank">Thai and English Dictionary.</a><br />
+	<a href="http://translate.googleusercontent.com/translate_c?depth=1&hl=th&rurl=translate.google.co.th&sl=th&tl=en&twu=1&u=http://www.84000.org/tipitaka/pitaka_item/&usg=ALkJrhh6a4xiTIAjSmLSmRA3go5et4GiWw" target="_blank">Translate back to english by Google Translate tool of Thai Translated Tipitaka and Atthakathā.</a><br />
+</p>
+<h3 id="joecontent3-title" class="handcursor">How to and Tips</h3>
+<p id="joecontent3" class="switchgroup2">
 	<b>Online Contact</b><br />
 	<a href="http://code.google.com/p/pali-editor/" target="_blank">Google Code</a><br />
 	<b>Manual</b><br />
-	paliEditor has 2 methods--mouse click and meyboard shortcut, to insert pali special character.<br />
-	-<b>Keyboard Shortcut</b><br />
-	--1.Press Ctrl+q to switch to special character mode.<br />
-	--2.Type special pali : ā, ī, ū, ṭ, ḍ, ḷ, and ṁ press a, i, u, t, d, l, and m, respectively. ṅ and ñ press k and c. ṇ press n. Press shift to insert upercase character.<br />
-	--3.Press Ctrl+q again to switch back to normal character mode.<br />
-	-<b>Mouse Click</b><br />
-	--Click on "Toolbar" then click on a character button that you would like to insert.<br />
-	-<b>Another Tips.</b><br />
-	--Press Ctrl+1 to Save.<br />
-	--Press Ctrl+A to select all message in the textarea, then press Ctrl+C to copy. <br />
-	--You maybe bookmark this page for easy to access. <br />
-	--The editor will auto-save your message every 5 minute. <br />
-	--Don't open more than one paliEditor, because the save option can save only one paliEditor, except a difference browser user, browser application, or OS. <br />
-    </p>
-    <script type="text/javascript">
+	 paliEditor has 2 methods--mouse click and meyboard shortcut, to insert pali special character.<br />
+	 -<b>Keyboard Shortcut</b><br />
+	 --Use Shortcut Key to insert pali special character. Notice : shortcut keys are relative with Samaññābhidhāna in Kaccayanaveyyākaraṇa.<br />
+	<script language="javascript">
+	for (i in spclChar) {
+	    if (i<10) { 
+		document.write('"'+spclChar[i]+'" = '+shortcutKey+' + Shift + '+nomlChar[i]+'<br />');
+	    } else {
+		document.write('"'+spclChar[i]+'" = '+shortcutKey+' + '+nomlChar[i]+'<br />');
+	    } 
+	}  
+	</script>
+	 -<b>Mouse Click</b><br />
+	 --Click on "Toolbar" then click on a character button that you would like to insert. Button sorted as alike as Samaññābhidhāna in Kaccayanaveyyākaraṇa.<br />
+	 -<b>Another Tips.</b><br />
+	 --Press Ctrl+S to Save except midori browser use Alt+S.<br />
+	 --Press Ctrl+A to select all message in the textarea, then press Ctrl+C to copy. <br />
+	 --<b>You should bookmark this page for easy to access. <br />
+	 --The editor will auto-save your message every 5 minute. <br />
+	 --Don't open more than one paliEditor, because the save option can save only one paliEditor--except a difference browser user, browser application, or OS. If you have more than 1 article to write, you can use Seperate button in Toolbar tab to seperate between content.<br />
+</p>
+<script type="text/javascript">
     var joeexample=new switchcontent("switchgroup2", "p") //Limit scanning of switch contents to just "p" elements
     joeexample.setStatus('[-] ', '[+] ')
     joeexample.setColor('green', 'red')
@@ -463,6 +652,6 @@ function textareaLoad() {
     joeexample.setPersist(false)
     joeexample.defaultExpanded(1)
     joeexample.init()
-    </script>    
-  </body>
+    </script>
+</body>
 </html>
