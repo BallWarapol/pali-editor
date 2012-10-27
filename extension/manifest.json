@@ -1,0 +1,12 @@
+{
+  "name": "paliEditor",
+  "version": "1.0",
+  "manifest_version": 2,
+  "description": "The Editor of Pali Language and Tool for Buddhist Students.",
+  "browser_action": {
+    "default_icon": "icon.png"
+  },
+  "permissions": [
+    "http://api.flickr.com/"
+  ]
+}

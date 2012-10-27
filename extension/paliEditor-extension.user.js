@@ -18,13 +18,17 @@ if ((location.host+"").indexOf("dhammawheel.com")>-1) {
 	var txtArea=document.getElementById("message");
 	var txtAreaPlace=document.getElementById("message-box");
 } else {
-	if ((location.href+"").indexOf("edit")>-1) {
+	if (location.href.indexOf("edit")>-1 && location.href.indexOf("comment")==-1 ) {
+		var txtArea=document.getElementById("edit-body-und-0-value");
+		var txtAreaPlace=document.getElementById("edit-body");
+	} else if (location.href.indexOf("add")>-1) {
+		var txtArea=document.getElementById("edit-body-und-0-value");
+		var txtAreaPlace=document.getElementById("body-add-more-wrapper");
+		alert(txtArea+"--"+txtAreaPlace)
+	} else {
 		var txtArea=document.getElementById("edit-comment-body-und-0-value");
-		var txtAreaPlace=document.getElementById("edit-comment-body");
-	} else{
-			var txtArea=document.getElementById("edit-body-und-0-value");
-			var txtAreaPlace=document.getElementById("body-add-more-wrapper");
-	}
+		var txtAreaPlace=document.getElementById("comment-body-add-more-wrapper");
+	} 	
 
 }
 var shortcutKey="Alt";
