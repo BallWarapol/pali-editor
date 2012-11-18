@@ -1839,7 +1839,8 @@ shortcut = {
 		else ele['on'+type] = false;
 	}
 }
-    </script>
+</script>
+
 <script language="javascript">
     // -------------------------------------------------------------------
     // Switch Content Script- By Dynamic Drive, available at: http://www.dynamicdrive.com
@@ -2082,7 +2083,7 @@ shortcut = {
     }
     </script>
 <script language="javascript">
-    setInterval(function(){textAreaSave();},50000);
+    //if (txtArea.value!="") setInterval(function(){textAreaSave();},50000);
     // calling the function
     // insertAtCursor(document.formName.fieldName, 'this value');
     function insertAtCursor(myField, myValue) {
@@ -2206,7 +2207,7 @@ shortcut = {
     <pre>    </pre></td><td align="left" width="54%">
     <h3 id="joecontent1-title" class="handcursor">Toolbar</h3>
     <p id="joecontent1" class="switchgroup1">
-	    <input type="button" value="Save" onclick="textAreaSave();" title="Ctrl+S, or Alt + S" />&nbsp;&nbsp;<input type="button" value="Load" onclick="textAreaLoad();" />&nbsp;&nbsp;<input type="button" value="Sep." 
+	    <input type="button" id="saveBut" value="Save" onclick="textAreaSave();" title="Ctrl+S, or Alt + S" />&nbsp;&nbsp;<input type="button" id="loadBut" value="Load" onclick="textAreaLoad();" />&nbsp;&nbsp;<input type="button" value="Sep." 
 	    onclick="textArea.value='\n\n--------------------------------------------\n\n' +textArea.value; setCursorPosition(textArea, 0); textArea.focus(); " /><br />
 	    <br />
 	    <span id="charToolbar"></span>
@@ -2242,6 +2243,15 @@ shortcut = {
 	shortcut.add("Alt+S",function() {
 		textAreaSave();
 	});
+	shortcut.remove("Ctrl+Shift+S");
+	shortcut.add("Ctrl+Shift+S",function() {
+	    textAreaLoad();
+	});
+	shortcut.remove("Alt+Shift+S");
+	shortcut.add("Alt+Shift+S",function() {
+	    textAreaLoad();
+	});
+
 	for (i in nomlUpChar) {
 	    shortcut.remove(shortcutKey+"+"+nomlUpChar[i]);
 	    shortcut.remove(shortcutKey+"+Shift"+nomlLoChar[i]);
@@ -2388,9 +2398,9 @@ shortcut = {
 	<h3 id="joecontent5-title" class="handcursor">Shortcut List</h3>
 	<p id="joecontent5" class="switchgroup1">
 	    	paliEditor has 2 choice of shortcut keys for you. <br />
-		 1. <a href="#globShortcutShow"><i>Global Web Browser Shortcut (recommend)</i></a> ,always use with <i>Ctrl</i>, support to all modern browsers such as chrome, firefox, internet explorer, safari, opera, midori.<br />
+		 1. <a href="#globShortcutShow"><i>Cross Web Browser Shortcut (recommend)</i></a> ,always use with <i>Ctrl</i>, support to all modern browsers such as chrome, firefox, internet explorer, safari, opera, midori.<br />
 		 2. <a href="#paliShortcutShow"><i>Pali Relative Shortcut</i></a>  always use with <i>Ctrl</i> don't support in every browser, such as IE, but they are relative with Samaññābhidhāna of Kaccayanaveyyākaraṇa that make you easy to remember keys.<br />
-		 <br /><a name='globShortcutShow' ></a><b>Global Web Browser Shortcut</b><br /><br />
+		 <br /><a name='globShortcutShow' ></a><b>Cross Web Browser Shortcut</b><br /><br />
 		 &nbsp;&nbsp;&nbsp;&nbsp;"&lt;save&gt;" = <i>Ctrl</i> + <b>Q</b><br />
 		<script language="javascript">
 		for (i in spclChar) {
