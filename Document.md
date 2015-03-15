@@ -1,0 +1,1 @@
+See Document at http://tipitakanews.org/sites/default/files/paliEditor.html
