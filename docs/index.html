@@ -1,5 +1,17 @@
 
-<div id="header" style="position:relative;text-align:center;"><!-- define relative so child absolute's are based on this elements origin -->
-    <div id="sampleLink" style="position:absolute; top:0px; right:0px; >Link</div>
-    <h1 style="text-align:center;">Heading</h1>
+<div class='fullscreenDiv'>
+    <div class="center">
+        PaliEditor Online<br />
+        <a href="http://ballwarapol.github.io/pali-editor/">http://ballwarapol.github.io/pali-editor/paliEditor.html</a>
 </div>
+</div>​
+
+.center {
+    position: absolute;
+    width: 100px;
+    height: 50px;
+    top: 50%;
+    left: 50%;
+    margin-left: -50px; /* margin is -0.5 * dimension */
+    margin-top: -25px; 
+}​
