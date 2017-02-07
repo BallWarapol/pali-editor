@@ -2212,7 +2212,7 @@ shortcut = {
 	    onclick="textArea.value='\n\n--------------------------------------------\n\n' +textArea.value; setCursorPosition(textArea, 0); textArea.focus(); " /><br />
 	    <br />
 	    <span id="charToolbar"></span><br />
-	    o: <input type=text id=oWord /> n: <input type=text id=oWord /> <input type="button" value="Replace" onclick="var oWord = new RegExp(); oWord.compile(document.getElementById('oWord').value);var nWord = new RegExp(); nWord.compile(document.getElementById('nWord').value); textArea.value=textArea.value.replace(oWord, nWord);"  />&nbsp;&nbsp;
+	    o: <input type=text id=oWord /> n: <input type=text id=nWord /> <input type="button" value="Replace" onclick="var oWord = new RegExp(); oWord.compile(document.getElementById('oWord').value);var nWord = new RegExp(); nWord.compile(document.getElementById('nWord').value); textArea.value=textArea.value.replace(oWord, nWord);"  />&nbsp;&nbsp;
     </p>
     <h3 id="joecontent2-title" class="handcursor">paliEditor</h3>
     <p id="joecontent2" class="switchgroup1">
