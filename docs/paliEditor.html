@@ -4,6 +4,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <title>paliEditor: The Editor of Pali Language and Tool for  Buddhist Students</title>
 <script language="javascript">
+	
 /*        Copyright 2012 theY <palieditor@googlegroups.com>
         
         This program is free software; you can redistribute it and/or modify
@@ -2210,7 +2211,8 @@ shortcut = {
 	    <input type="button" id="saveBut" value="Save" onclick="textAreaSave();" title="Ctrl+S, or Alt + S" />&nbsp;&nbsp;<input type="button" id="loadBut" value="Load" onclick="textAreaLoad();" />&nbsp;&nbsp;<input type="button" value="Sep." 
 	    onclick="textArea.value='\n\n--------------------------------------------\n\n' +textArea.value; setCursorPosition(textArea, 0); textArea.focus(); " /><br />
 	    <br />
-	    <span id="charToolbar"></span>
+	    <span id="charToolbar"></span><br />
+	    o: <input type=text id=oWord /> n: <input type=text id=oWord /> <input type="button" value="Replace" onclick="var oWord = new RegExp(); oWord.compile(document.getElementById('oWord').value);var nWord = new RegExp(); nWord.compile(document.getElementById('nWord').value); textArea.value=textArea.value.replace(oWord, nWord);"  />&nbsp;&nbsp;
     </p>
     <h3 id="joecontent2-title" class="handcursor">paliEditor</h3>
     <p id="joecontent2" class="switchgroup1">
