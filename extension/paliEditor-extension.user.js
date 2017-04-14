@@ -1,10 +1,12 @@
 // ==UserScript==
 // @name          paliEditor
 // @description	  pali special character and tipitaka tool center for tipitaka students.
-// @include       *.tipitakanews.org/*
-// @include       *.dhammawheel.com/*
+// @namespace   http://tipitakanews.com
+// @include       https://dhammawheel.com/*
+// @include       http://dhammawheel.com/*
+// @version     1
 // ==/UserScript==
-
+ 
 /*        Copyright 2012 theY <palieditor@googlegroups.com>
         
         This program is free software; you can redistribute it and/or modify
@@ -2070,4 +2072,3 @@ shortcut.add("Alt+Shift+W",function() { lastPos=getCursorPosition(document.activ
 shortcut.add("Alt+w",function() { lastPos=getCursorPosition(document.activeElement); insertAtCursor(document.activeElement, ""); postShortcutSet(lastPos);});
 shortcut.add("Ctrl+Shift+11",function() { lastPos=getCursorPosition(document.activeElement); insertAtCursor(document.activeElement, "๏"); postShortcutSet(lastPos);});
 shortcut.add("Ctrl+11",function() { lastPos=getCursorPosition(document.activeElement); insertAtCursor(document.activeElement, ""); postShortcutSet(lastPos);});
-
