@@ -4,7 +4,7 @@
 // @namespace   http://tipitakanews.com
 // @include       https://dhammawheel.com/*
 // @include       http://dhammawheel.com/*
-// @version     1
+// @version     2.1
 // ==/UserScript==
  
 /*        Copyright 2012 theY <palieditor@googlegroups.com>
