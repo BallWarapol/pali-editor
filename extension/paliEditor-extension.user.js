@@ -4,7 +4,11 @@
 // @namespace   http://tipitakanews.com
 // @include       https://dhammawheel.com/*
 // @include       http://dhammawheel.com/*
-// @version     2.1
+// @include       https://buddhism.stackexchange.com/*
+// @include       http://buddhism.stackexchange.com/*
+// @include       https://www.blogger.com/*
+// @include       http://www.blogger.com/*
+// @version     1.3
 // ==/UserScript==
  
 /*        Copyright 2012 theY <palieditor@googlegroups.com>
@@ -1933,10 +1937,19 @@ shortcut = {
 	}catch(e){}
     }
     function setLast( e ) { lastArea = this; }
-    
+
 if (location.host.indexOf("dhammawheel.com")>-1) {
 	var txtArea=document.getElementById("message");
 	var txtAreaPlace=document.getElementById("message-box");
+} else if ((location+"").indexOf("#editor/target")>-1) {
+	window.open("http://ballwarapol.github.io/pali-editor/paliEditor.html", '_blank');
+	/*var iframe = document.getElementById('postingComposeBox');
+	var innerDoc = (iframe.contentDocument) ? iframe.contentDocument : iframe.contentWindow.document;
+	var txtArea=document.getElementById("postingHtmlBox");
+	var txtAreaPlace=document.getElementById("blogID"); */
+} else if (location.host.indexOf("buddhism.stackexchange.com")>-1) {
+	var txtArea=document.getElementsByName("post-text")[0];
+	var txtAreaPlace=document.getElementById("mainbar");
 } else if(location.href.toLowerCase().indexOf("palieditor.html")==-1){
 	if (location.href.indexOf("edit")>-1 && location.href.indexOf("comment")==-1 ) {
 		var txtArea=document.getElementById("edit-body-und-0-value");
