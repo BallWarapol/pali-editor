@@ -1,0 +1,28 @@
+<meta http-equiv="Content-Type" content="text/html; charset=utf8" />
+<title>Pali Words Counter : โปรแกรมนับพยางค์บาลี</title>
+<TABLE WIDTH=100% BORDER=1 BORDERCOLOR="#000000" CELLPADDING=4 CELLSPACING=0>
+	<COL WIDTH=256*>
+	<TR>
+		<TD WIDTH=100% VALIGN=TOP>
+			<P align=center ><b>ผลการนับ : <span id=result> - </span>  พยางค์.<BR></b><BR>
+			</P>
+		</TD>
+	</TR>
+	<TR>
+		<TD WIDTH=100% VALIGN=TOP align=center>
+            <P><i>กรอกข้อความในช่องด้านล่าง  แล้วกด <input type=button value=" นับพยางค์  " onclick='paliCounter()' /></i>
+            </P>
+			<P>
+            <textarea cols=100 rows=18 id=paliInput></textarea>
+			</P>
+		</TD>
+	</TR>
+</TABLE>
+
+<script>
+function paliCounter () {
+	var pali=document.getElementById("paliInput").value;
+	var words=pali.replace(/.ฺ|[^ก-ฮ??]/g, "");
+	document.getElementById("result").innerHTML=words.length;
+}
+</script>
