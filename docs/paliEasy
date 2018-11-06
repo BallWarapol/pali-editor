@@ -1,0 +1,44 @@
+<meta http-equiv="Content-Type" content="text/html; charset=utf8" />
+<title>Pali Easy : โปรแกรมแปลงบาลีให้อ่านง่าย</title>
+<TABLE WIDTH=100% BORDER=1 BORDERCOLOR="#g0fg50" CELLPADDING=4 CELLSPACING=0>
+	<COL WIDTH=256*>
+	<TR>
+		<TD WIDTH=100% VALIGN=TOP>
+			<P align=center ><b>โปรแกรมแปลงบาลีให้อ่านง่าย<BR></b><BR>
+			</P>
+		</TD>
+	</TR>
+	<TR>
+		<TD WIDTH=100% VALIGN=TOP align=center>
+            <P><i>กรอกข้อความในช่องด้านล่าง  แล้วกด <input type=button value=" แปลงบาลีให้อ่านง่าย  " onclick='paliCounter()' /></i>
+            </P>
+			<P>
+            <textarea cols=100 rows=18 id=paliInput></textarea>
+			</P>
+		</TD>
+	</TR>
+		<TR>
+		<TD WIDTH=100% VALIGN=TOP align=center>
+            <P><i>ผลลัพธ์</i>
+            </P>
+			<P>
+            <textarea cols=100 rows=18 id=romanOutput>
+</textarea>
+			</P>
+		</TD>
+	</TR>
+</TABLE>
+
+<script>
+function paliCounter () {
+	var pali=document.getElementById("paliInput").value;
+	var words=pali.replace(/(โ|เ)(.)/g,"$2$1")
+	.replace (/([ก-ฮ])/g,"$1ะ")
+	.replace (/ะ([ะาิีุูเโฺํ])/g,"$1")
+	.replace (/ะ([ก-ฮ])\ฺ/g,"ั$1")
+	.replace (/\ฺ/g,"")
+	.replace (/ํ/g,"ัง")
+	.replace(/(.)(โ|เ)/g,"$2$1");
+	document.getElementById("romanOutput").innerHTML=words;
+}
+</script>
